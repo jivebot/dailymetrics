@@ -11,7 +11,8 @@ class DataPointsController < ApplicationController
   end
 
   def create
-    metric, data_point = set_data_point(params[:metric_id], selected_date, params[:value])
+    metric = current_user.metrics.find(params[:metric_id])
+    data_point = metric.set_data_point(selected_date, params[:value])
     data_point ||= metric.data_points.build
 
     render json: data_point.as_json(metric: metric)
@@ -36,21 +37,5 @@ class DataPointsController < ApplicationController
     metrics.map do |metric|
       existing_data_points[metric.id] || metric.data_points.build
     end
-  end
-
-  def set_data_point(metric_id, date, value)
-    metric = current_user.metrics.find(metric_id)
-
-    if value.present?
-      data_point = metric.data_points.find_or_initialize_by(on_date: date)
-      data_point.value = value
-      data_point.save!
-    else
-      metric.data_points.where(on_date: date).delete_all
-    end
-
-    metric.update_streaks!
-
-    [metric, data_point]
   end
 end

@@ -8,6 +8,21 @@ class Metric < ApplicationRecord
 
   validates :user, presence: true
 
+  def set_data_point(date, value)
+    if value.present?
+      data_point = data_points.find_or_initialize_by(on_date: date)
+      data_point.value = value
+      data_point.save!
+    else
+      data_point = nil
+      data_points.where(on_date: date).delete_all
+    end
+
+    update_streaks!
+
+    data_point
+  end
+
   def update_streaks!
     update_streak(:presence)
     update_streak(:positive) if type_boolean?
