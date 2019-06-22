@@ -1,17 +1,32 @@
 import React from 'react';
+import format from 'date-fns/format';
 import RadioList from './RadioList';
+import TextField from './TextField';
 
-export default function({ dataPoint, setDataPoint }) {
+const valueComponents = {
+  'boolean': [RadioList, { options: [[0, "No"], [1, "Yes"]] }],
+  'number':  [TextField]
+};
+
+function createValueComponent(metricType, commonProps) {
+  const [klass, specialProps] = valueComponents[metricType];
+  const props = { ...commonProps, ...specialProps };
+  return React.createElement(klass, props, null);
+}
+
+export default function({ dataPoint, setDataPoint, date }) {
   const { value } = dataPoint;
 
-  const setValue = value => {
-    setDataPoint(dataPoint.metric_id, value);
+  const setValue = (value, localOnly) => {
+    setDataPoint(dataPoint.metric_id, value, localOnly);
   };
 
   const clearValue = e => {
     e.preventDefault();
-    setValue(null);
+    setValue(null, false);
   };
+
+  const valueComponent = createValueComponent(dataPoint.metric.metric_type, { value, setValue });
 
   return (
     <div>
@@ -19,9 +34,9 @@ export default function({ dataPoint, setDataPoint }) {
         <h5 className="card-header align-items-center">
           {dataPoint.metric.name}
         </h5>
-        <div className="card-body">
+        <div id={`data-point-${format(date, 'YYYY-MM-DD')}`} className="card-body">
           <div className="d-flex align-items-center">
-            <RadioList value={value} setValue={setValue} options={[[0, "No"], [1, "Yes"]]} />
+            {valueComponent}
             {value !== null && 
               <div className="ml-2">
                 <a href="#" onClick={clearValue} className="btn btn-outline-secondary btn-sm">Clear</a>

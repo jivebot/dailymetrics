@@ -16,7 +16,7 @@ class DataPoint < ApplicationRecord
 
   def as_json(options = {})
     hash = super(
-      except: [:integer_value, :created_at, :updated_at],
+      only: [:metric_id, :on_date],
       methods: [:value]
     )
     metric = options[:metric] || self.metric

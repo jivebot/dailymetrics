@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { addDays, format, isBefore, startOfToday } from 'date-fns';
 import DataPointList from './DataPointList';
 import { getDataPoints, postDataPoint } from '../api';
+import { blank, validNumber } from 'utils';
 
 function updateDataPoint(dataPoints, metricId, fn) {
   return dataPoints.map(d => {
@@ -9,38 +10,60 @@ function updateDataPoint(dataPoints, metricId, fn) {
   });
 }
 
+const initialState = {
+  date: startOfToday(),
+  dataPoints: []
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'CHANGE_DATE':
+      return { ...state, date: addDays(state.date, action.delta), dataPoints: [] };
+    case 'SET_DATA_POINTS':
+      return { ...state, dataPoints: action.dataPoints };
+    case 'SET_VALUE':
+      return {
+        ...state,
+        dataPoints: updateDataPoint(state.dataPoints, action.metricId, d => ({ ...d, value: action.value }))
+      };
+    case 'UPDATE_METRIC':
+      return {
+        ...state,
+        dataPoints: updateDataPoint(state.dataPoints, action.metricId, d => ({ ...d, metric: action.metric }))
+      };
+    default:
+      throw new Error();
+  }
+}
+
 export default function() {
-  const [date, setDate] = useState(startOfToday());
-  const [dataPoints, setDataPoints] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { date, dataPoints } = state;
 
   const changeDate = delta => {
     return e => {
       e.preventDefault();
-      setDate(addDays(date, delta));
-      setDataPoints([]);
+      dispatch({ type: 'CHANGE_DATE', delta });
     };
   };
 
-  const setDataPoint = (metricId, value) => {
-    if (isLoading) return;
-    setIsLoading(true);
+  const setDataPoint = (metricId, value, localOnly) => {
+    dispatch({ type: 'SET_VALUE', metricId, value });
 
-    const currentData = dataPoints;
+    if (localOnly) return;
 
-    setDataPoints(updateDataPoint(dataPoints, metricId, d => ({ ...d, value })));
-
-    postDataPoint(metricId, date, value)
-      .then(({ data }) => {
-        setDataPoints(updateDataPoint(dataPoints, metricId, d => data));
-      })
-      .catch(() => setDataPoints(currentData))
-      .finally(() => setIsLoading(false));
+    if (blank(value) || validNumber(value)) {
+      postDataPoint(metricId, date, value)
+        .then(({ data }) => {
+          dispatch({ type: 'UPDATE_METRIC', metricId, metric: data.metric });
+        })
+        .catch(() => console.log('Unable to persist value'));
+    }
   };
 
   useEffect(() => {
     getDataPoints(date)
-      .then(result => setDataPoints(result.data));
+      .then(result => dispatch({ type: 'SET_DATA_POINTS', dataPoints: result.data }));
   }, [date]);
 
   return (
@@ -52,7 +75,7 @@ export default function() {
           <a href="#" onClick={changeDate(1)} id="next-date-link" className="date-link">&#9654;</a>
         }
       </h3>
-      <DataPointList dataPoints={dataPoints} setDataPoint={setDataPoint} />
+      <DataPointList dataPoints={dataPoints} setDataPoint={setDataPoint} date={date} />
     </div>
   );
 }
