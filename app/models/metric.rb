@@ -9,6 +9,18 @@ class Metric < ApplicationRecord
 
   validates :user, presence: true
 
+  def as_json(options = {})
+    {
+      id: id,
+      name: name,
+      metricType: metric_type,
+      presenceStreakStart: presence_streak_start,
+      presenceStreakDays: presence_streak_days,
+      positiveStreakStart: positive_streak_start,
+      positiveStreakDays: positive_streak_days
+    }
+  end
+
   def set_data_point(date, value)
     if value.present?
       data_point = data_points.find_or_initialize_by(on_date: date)

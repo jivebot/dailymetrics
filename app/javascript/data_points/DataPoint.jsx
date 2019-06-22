@@ -14,11 +14,11 @@ function createValueComponent(metricType, commonProps) {
   return React.createElement(klass, props, null);
 }
 
-export default function({ dataPoint, setDataPoint, date }) {
-  const { value } = dataPoint;
+export default function({ metric, dataPoint, setDataPoint, date }) {
+  const value = dataPoint ? dataPoint.value : '';
 
   const setValue = (value, localOnly) => {
-    setDataPoint(dataPoint.metric_id, value, localOnly);
+    setDataPoint(metric.id, value, localOnly);
   };
 
   const clearValue = e => {
@@ -26,13 +26,13 @@ export default function({ dataPoint, setDataPoint, date }) {
     setValue(null, false);
   };
 
-  const valueComponent = createValueComponent(dataPoint.metric.metric_type, { value, setValue });
+  const valueComponent = createValueComponent(metric.metricType, { value, setValue });
 
   return (
     <div>
-      <div id={`metric-${dataPoint.metric_id}`} className="card mt-4">
+      <div id={`metric-${metric.id}`} className="card mt-4">
         <h5 className="card-header align-items-center">
-          {dataPoint.metric.name}
+          {metric.name}
         </h5>
         <div id={`data-point-${format(date, 'YYYY-MM-DD')}`} className="card-body">
           <div className="d-flex align-items-center">
@@ -43,8 +43,8 @@ export default function({ dataPoint, setDataPoint, date }) {
               </div>
             }
           </div>
-          {dataPoint.metric.presence_streak_days && 
-            <span className="badge badge-info mt-2">{dataPoint.metric.presence_streak_days}-day streak!</span>
+          {metric.presenceStreakDays && 
+            <span className="badge badge-info mt-2">{metric.presenceStreakDays}-day streak!</span>
           }
         </div>
       </div>

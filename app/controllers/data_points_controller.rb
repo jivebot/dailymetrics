@@ -6,16 +6,19 @@ class DataPointsController < ApplicationController
   def index
     respond_to do |format|
       format.html
-      format.json { render json: data_points(selected_date) }
+      format.json do
+        payload = { data_points: data_points(selected_date) }
+        payload[:metrics] = metrics if params[:load_metrics].present?
+        render json: payload
+      end
     end
   end
 
   def create
     metric = current_user.metrics.find(params[:metric_id])
     data_point = metric.set_data_point(selected_date, params[:value])
-    data_point ||= metric.data_points.build
 
-    render json: data_point.as_json(metric: metric)
+    render json: metric
   end
 
   private
@@ -24,18 +27,11 @@ class DataPointsController < ApplicationController
     params[:date]&.to_date || Date.current
   end
 
+  def metrics
+    current_user.metrics.order(:id)
+  end
+
   def data_points(date)
-    metrics = current_user.metrics.order(:id)
-
-    # Find existing data points user has already entered for this date so
-    # that they don't need to be loaded one-by-one later.
-    existing_data_points = DataPoint.for_user(current_user).for_date(date)
-      .includes(:metric)
-      .to_h { |d| [d.metric_id, d] }
-
-    # Build list of either existing or new data points for each metric.
-    metrics.map do |metric|
-      existing_data_points[metric.id] || metric.data_points.build
-    end
+    DataPoint.for_user(current_user).for_date(date)
   end
 end

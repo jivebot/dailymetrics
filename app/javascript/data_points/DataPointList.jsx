@@ -1,11 +1,11 @@
 import React from 'react';
 import DataPoint from './DataPoint';
 
-export default function({ dataPoints, setDataPoint, date }) {
+export default function({ metrics, setDataPoint, date }) {
   return (
     <div>
-      {dataPoints.map(dataPoint => (
-        <DataPoint dataPoint={dataPoint} setDataPoint={setDataPoint} date={date} key={dataPoint.metric_id} />
+      {metrics.map(metric => (
+        <DataPoint metric={metric} dataPoint={metric.dataPoint} setDataPoint={setDataPoint} date={date} key={metric.id} />
       ))}
     </div>
   );

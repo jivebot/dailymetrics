@@ -1,9 +1,9 @@
 import axios from 'axios';
 import format from 'date-fns/format';
 
-export function getDataPoints(date) {
+export function getDataPoints(date, loadMetrics) {
   return axios.get('/data_points.json', {
-    params: { date: format(date, 'YYYY-MM-DD') }
+    params: { date: format(date, 'YYYY-MM-DD'), load_metrics: loadMetrics ? '1' : '' }
   });
 }
 

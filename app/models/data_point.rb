@@ -15,13 +15,12 @@ class DataPoint < ApplicationRecord
   delegate :metric_type, to: :metric
 
   def as_json(options = {})
-    hash = super(
-      only: [:metric_id, :on_date],
-      methods: [:value]
-    )
-    metric = options[:metric] || self.metric
-    hash[:metric] = metric.as_json(except: [:user_id, :created_at, :updated_at])
-    hash
+    {
+      id: id,
+      metricId: metric_id,
+      onDate: on_date,
+      value: value
+    }
   end
 
   def value
