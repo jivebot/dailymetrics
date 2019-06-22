@@ -6,3 +6,4 @@ user = User.create!(
 
 user.metrics.create!(name: "Flossed", metric_type: "boolean")
 user.metrics.create!(name: "Went for a walk", metric_type: "boolean")
+user.metrics.create!(name: "Weight", metric_type: "number")

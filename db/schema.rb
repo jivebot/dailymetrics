@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_14_221347) do
+ActiveRecord::Schema.define(version: 2019_06_20_205234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2019_06_14_221347) do
     t.integer "integer_value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "float_value"
     t.index ["metric_id"], name: "index_data_points_on_metric_id"
     t.index ["on_date", "metric_id"], name: "index_data_points_on_on_date_and_metric_id", unique: true
   end

@@ -1,4 +1,9 @@
 class DataPoint < ApplicationRecord
+  TYPE_COLUMN_MAPPING = {
+    'boolean' => 'integer_value',
+    'number'  => 'float_value'
+  }
+
   belongs_to :metric
 
   validates :metric, presence: true
@@ -6,6 +11,8 @@ class DataPoint < ApplicationRecord
 
   scope :for_user, ->(user) { joins(:metric).where(metrics: { user: user }) }
   scope :for_date, ->(date) { where(on_date: date) }
+
+  delegate :metric_type, to: :metric
 
   def as_json(options = {})
     hash = super(
@@ -18,10 +25,10 @@ class DataPoint < ApplicationRecord
   end
 
   def value
-    integer_value
+    send(TYPE_COLUMN_MAPPING[metric_type])
   end
 
   def value=(val)
-    self.integer_value = val
+    send("#{TYPE_COLUMN_MAPPING[metric_type]}=", val)
   end
 end

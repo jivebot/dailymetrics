@@ -3,7 +3,8 @@ class Metric < ApplicationRecord
   has_many :data_points, dependent: :destroy
 
   enum metric_type: {
-    boolean: 10
+    boolean: 10,
+    number:  20
   }, _prefix: 'type'
 
   validates :user, presence: true

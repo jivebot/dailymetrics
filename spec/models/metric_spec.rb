@@ -4,7 +4,7 @@ RSpec.describe Metric, type: :model do
   
   describe "#update_streaks!" do
     let!(:user) { create(:user) }
-    let(:metric_type) { :boolean }
+    let(:metric_type) { :number }
     let!(:metric_1) { create(:metric, metric_type: metric_type) }
 
     it "sets presence values if data points exist" do
