@@ -8,7 +8,6 @@ import { blank, validNumber, dateStr, datesEndingOn } from 'utils';
 const initialState = {
   date: startOfToday(),
   datesLoaded: {},
-  isLoaded: false,
   metrics: {},
   dataPoints: {}
 };
@@ -23,7 +22,6 @@ function reducer(state, action) {
         const { data_points: dataPoints, metrics } = action.payload;
 
         if (metrics) {
-          draft.isLoaded = true;
           metrics.forEach(m => {
             draft.metrics[m.id] = m;
             draft.dataPoints[m.id] = {};
@@ -87,7 +85,7 @@ export default function() {
     }, []);
 
     if (datesToLoad.length > 0) {
-      const loadMetrics = !state.isLoaded;
+      const loadMetrics = Object.keys(datesLoaded).length == 0;
       getDataPoints(datesToLoad, loadMetrics)
         .then(({ data }) => dispatch({ type: 'LOAD_DATA_POINTS', dates: datesToLoad, payload: data }));
     }
