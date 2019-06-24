@@ -4,7 +4,7 @@ import TextField from './TextField';
 import { dateStr } from 'utils';
 
 const valueComponents = {
-  'boolean': [RadioList, { options: [[0, "No"], [1, "Yes"]] }],
+  'boolean': [RadioList, { options: [["1", "Yes"], ["0", "No"]] }],
   'number':  [TextField]
 };
 
@@ -21,11 +21,6 @@ export default function({ metric, onDate, dataPoint, setDataPoint }) {
     setDataPoint(metric.id, onDate, value, localOnly);
   };
 
-  const clearValue = e => {
-    e.preventDefault();
-    setValue(null, false);
-  };
-
   const valueComponent = createValueComponent(metric.metricType, { value, setValue });
 
   return (
@@ -37,11 +32,6 @@ export default function({ metric, onDate, dataPoint, setDataPoint }) {
         }
       </div>
       {valueComponent}
-      {value !== '' &&
-        <div className="mt-1">
-          <a href="#" onClick={clearValue} className="btn btn-outline-secondary btn-sm">Clear</a>
-        </div>
-      }
     </div>
   );
 }
