@@ -7,7 +7,8 @@ class DataPointsController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        payload = { data_points: data_points(selected_date) }
+        dates = params[:dates].map(&:to_date)
+        payload = { data_points: data_points(dates) }
         payload[:metrics] = metrics if params[:load_metrics].present?
         render json: payload
       end
@@ -16,22 +17,18 @@ class DataPointsController < ApplicationController
 
   def create
     metric = current_user.metrics.find(params[:metric_id])
-    data_point = metric.set_data_point(selected_date, params[:value])
+    data_point = metric.set_data_point(params[:date]&.to_date, params[:value])
 
     render json: metric
   end
 
   private
 
-  def selected_date
-    params[:date]&.to_date || Date.current
-  end
-
   def metrics
     current_user.metrics.order(:id)
   end
 
-  def data_points(date)
-    DataPoint.for_user(current_user).for_date(date)
+  def data_points(dates)
+    DataPoint.for_user(current_user).for_date(dates).includes(:metric)
   end
 end

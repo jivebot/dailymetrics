@@ -1,7 +1,7 @@
 import React from 'react';
-import format from 'date-fns/format';
 import RadioList from './RadioList';
 import TextField from './TextField';
+import { dateStr } from 'utils';
 
 const valueComponents = {
   'boolean': [RadioList, { options: [[0, "No"], [1, "Yes"]] }],
@@ -14,11 +14,11 @@ function createValueComponent(metricType, commonProps) {
   return React.createElement(klass, props, null);
 }
 
-export default function({ metric, dataPoint, setDataPoint, date }) {
+export default function({ metric, date, dataPoint, setDataPoint }) {
   const value = dataPoint ? dataPoint.value : '';
 
   const setValue = (value, localOnly) => {
-    setDataPoint(metric.id, value, localOnly);
+    setDataPoint(metric.id, date, value, localOnly);
   };
 
   const clearValue = e => {
@@ -29,25 +29,19 @@ export default function({ metric, dataPoint, setDataPoint, date }) {
   const valueComponent = createValueComponent(metric.metricType, { value, setValue });
 
   return (
-    <div>
-      <div id={`metric-${metric.id}`} className="card mt-4">
-        <h5 className="card-header align-items-center">
-          {metric.name}
-        </h5>
-        <div id={`data-point-${format(date, 'YYYY-MM-DD')}`} className="card-body">
-          <div className="d-flex align-items-center">
-            {valueComponent}
-            {value !== null && 
-              <div className="ml-2">
-                <a href="#" onClick={clearValue} className="btn btn-outline-secondary btn-sm">Clear</a>
-              </div>
-            }
-          </div>
-          {metric.presenceStreakDays && 
-            <span className="badge badge-info mt-2">{metric.presenceStreakDays}-day streak!</span>
-          }
-        </div>
+    <div id={`data-point-${metric.id}-${dateStr(date)}`}>
+      <div className="d-sm-none">
+        <h4>{metric.name}</h4>
+        {metric.presenceStreakDays && 
+          <span className="badge badge-info mt-2">{metric.presenceStreakDays}-day streak!</span>
+        }
       </div>
+      {valueComponent}
+      {value !== '' &&
+        <div className="mt-1">
+          <a href="#" onClick={clearValue} className="btn btn-outline-secondary btn-sm">Clear</a>
+        </div>
+      }
     </div>
   );
 }

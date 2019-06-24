@@ -6,7 +6,7 @@ export default function({ value, setValue, options }) {
   return (
     <div>
       {options.map(([optValue, optLabel]) => (
-        <div className="form-check form-check-inline" key={optValue}>
+        <div className="form-check" key={optValue}>
           <label className="form-check-label">
             <input type="radio" value={optValue} onChange={onChange} checked={value === optValue} className="form-check-input" />
             {optLabel}

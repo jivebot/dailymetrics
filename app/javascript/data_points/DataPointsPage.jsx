@@ -1,12 +1,13 @@
 import React, { useEffect, useReducer } from 'react';
 import produce from 'immer';
-import { addDays, format, isBefore, startOfToday } from 'date-fns';
-import DataPointList from './DataPointList';
+import { addDays, isBefore, startOfToday } from 'date-fns';
+import DataPointGrid from './DataPointGrid';
 import { getDataPoints, postDataPoint } from '../api';
-import { blank, validNumber, dateStr } from 'utils';
+import { blank, validNumber, dateStr, datesEndingOn } from 'utils';
 
 const initialState = {
   date: startOfToday(),
+  datesLoaded: {},
   isLoaded: false,
   metrics: {},
   dataPoints: {}
@@ -22,21 +23,25 @@ function reducer(state, action) {
         const { data_points: dataPoints, metrics } = action.payload;
 
         if (metrics) {
-          draft.loaded = true;
+          draft.isLoaded = true;
           metrics.forEach(m => {
             draft.metrics[m.id] = m;
             draft.dataPoints[m.id] = {};
           });
         }
 
+        action.dates.forEach(date => {
+          draft.datesLoaded[dateStr(date)] = true;
+        });
+
         dataPoints.forEach(dp => {
-          draft.dataPoints[dp.metricId][dateStr(action.date)] = dp;
+          draft.dataPoints[dp.metricId][dp.onDate] = dp;
         });
 
         break;
       case 'SET_VALUE':
-        draft.dataPoints[action.metricId][dateStr(action.date)] =
-          { ...draft.dataPoints[action.metricId][dateStr(action.date)], value: action.value };
+        draft.dataPoints[action.metricId][dateStr(action.onDate)] =
+          { ...draft.dataPoints[action.metricId][dateStr(action.onDate)], value: action.value };
         break;
       case 'UPDATE_METRIC':
         draft.metrics[action.metric.id] = action.metric;
@@ -47,10 +52,13 @@ function reducer(state, action) {
 
 export default function() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { date, metrics, dataPoints } = state;
+  const { date, datesLoaded, metrics, dataPoints } = state;
+
+  const displayDates = datesEndingOn(date, 4);
 
   const metricsWithData = Object.values(metrics).map(metric => {
-    return { ...metric, dataPoint: dataPoints[metric.id][dateStr(date)] };
+    const dateData = displayDates.map(dd => dataPoints[metric.id][dateStr(dd)]);
+    return { ...metric, dataPoints: dateData };
   });
 
   const changeDate = delta => {
@@ -60,34 +68,40 @@ export default function() {
     };
   };
 
-  const setDataPoint = (metricId, value, localOnly) => {
-    dispatch({ type: 'SET_VALUE', metricId, date, value });
+  const setDataPoint = (metricId, onDate, value, localOnly) => {
+    dispatch({ type: 'SET_VALUE', metricId, onDate, value });
 
     if (localOnly) return;
 
     if (blank(value) || validNumber(value)) {
-      postDataPoint(metricId, date, value)
+      postDataPoint(metricId, onDate, value)
         .then(({ data }) => dispatch({ type: 'UPDATE_METRIC', metric: data }))
         .catch(() => console.log('Unable to persist value'));
     }
   };
 
   useEffect(() => {
-    const loadMetrics = !state.isLoaded;
-    getDataPoints(date, loadMetrics)
-      .then(({ data }) => dispatch({ type: 'LOAD_DATA_POINTS', date, payload: data }));
+    const datesToLoad = displayDates.reduce((arr, date) => {
+      if (!datesLoaded[dateStr(date)]) arr.push(date);
+      return arr;
+    }, []);
+
+    if (datesToLoad.length > 0) {
+      const loadMetrics = !state.isLoaded;
+      getDataPoints(datesToLoad, loadMetrics)
+        .then(({ data }) => dispatch({ type: 'LOAD_DATA_POINTS', dates: datesToLoad, payload: data }));
+    }
   }, [date]);
 
   return (
     <div>
       <h3 className="mt-5">
         <a href="#" onClick={changeDate(-1)} id="prev-date-link" className="date-link">&#9664;</a>
-        {format(date, 'dddd, MMMM D')}
         {isBefore(date, startOfToday()) && 
           <a href="#" onClick={changeDate(1)} id="next-date-link" className="date-link">&#9654;</a>
         }
       </h3>
-      <DataPointList metrics={metricsWithData} setDataPoint={setDataPoint} date={date} />
+      <DataPointGrid metrics={metricsWithData} setDataPoint={setDataPoint} displayDates={displayDates} />
     </div>
   );
 }
