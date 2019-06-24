@@ -13,7 +13,7 @@ export default function({ metric, displayDates, dataPoints, setDataPoint }) {
       </div>
       {dataPoints.map((dataPoint, i) => (
         <div className={`col-sm ${DATE_COLUMN_CLASSES[i]}`} key={i}>
-          <DataPoint metric={metric} date={displayDates[i]} dataPoint={dataPoint} setDataPoint={setDataPoint} />
+          <DataPoint metric={metric} onDate={displayDates[i]} dataPoint={dataPoint} setDataPoint={setDataPoint} />
         </div>
       ))}
     </div>

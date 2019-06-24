@@ -14,11 +14,11 @@ function createValueComponent(metricType, commonProps) {
   return React.createElement(klass, props, null);
 }
 
-export default function({ metric, date, dataPoint, setDataPoint }) {
+export default function({ metric, onDate, dataPoint, setDataPoint }) {
   const value = dataPoint ? dataPoint.value : '';
 
   const setValue = (value, localOnly) => {
-    setDataPoint(metric.id, date, value, localOnly);
+    setDataPoint(metric.id, onDate, value, localOnly);
   };
 
   const clearValue = e => {
@@ -29,7 +29,7 @@ export default function({ metric, date, dataPoint, setDataPoint }) {
   const valueComponent = createValueComponent(metric.metricType, { value, setValue });
 
   return (
-    <div id={`data-point-${metric.id}-${dateStr(date)}`}>
+    <div id={`data-point-${metric.id}-${dateStr(onDate)}`}>
       <div className="d-sm-none">
         <h4>{metric.name}</h4>
         {metric.presenceStreakDays && 

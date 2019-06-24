@@ -7,7 +7,7 @@ import { NUM_DATE_COLUMNS } from '../constants';
 import { blank, validNumber, dateStr, datesEndingOn } from 'utils';
 
 const initialState = {
-  date: startOfToday(),
+  currentDate: startOfToday(),
   datesLoaded: {},
   metrics: {},
   dataPoints: {}
@@ -17,7 +17,7 @@ function reducer(state, action) {
   return produce(state, draft => {
     switch (action.type) {
       case 'CHANGE_DATE':
-        draft.date = addDays(state.date, action.delta);
+        draft.currentDate = addDays(state.currentDate, action.delta);
         break;
       case 'LOAD_DATA_POINTS':
         const { data_points: dataPoints, metrics } = action.payload;
@@ -51,9 +51,9 @@ function reducer(state, action) {
 
 export default function() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { date, datesLoaded, metrics, dataPoints } = state;
+  const { currentDate, datesLoaded, metrics, dataPoints } = state;
 
-  const displayDates = datesEndingOn(date, NUM_DATE_COLUMNS);
+  const displayDates = datesEndingOn(currentDate, NUM_DATE_COLUMNS);
 
   const metricsWithData = Object.values(metrics).map(metric => {
     const dateData = displayDates.map(dd => dataPoints[metric.id][dateStr(dd)]);
@@ -90,13 +90,13 @@ export default function() {
       getDataPoints(datesToLoad, loadMetrics)
         .then(({ data }) => dispatch({ type: 'LOAD_DATA_POINTS', dates: datesToLoad, payload: data }));
     }
-  }, [date]);
+  }, [currentDate]);
 
   return (
     <div>
       <h3 className="mt-5">
         <a href="#" onClick={changeDate(-1)} id="prev-date-link" className="date-link">&#9664;</a>
-        {isBefore(date, startOfToday()) && 
+        {isBefore(currentDate, startOfToday()) && 
           <a href="#" onClick={changeDate(1)} id="next-date-link" className="date-link">&#9654;</a>
         }
       </h3>
