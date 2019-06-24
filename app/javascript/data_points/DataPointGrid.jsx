@@ -1,6 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import DataPointRow from './DataPointRow';
+import { DATE_COLUMN_CLASSES } from '../constants';
 
 export default function({ metrics, displayDates, setDataPoint }) {
   return (
@@ -8,18 +9,11 @@ export default function({ metrics, displayDates, setDataPoint }) {
       <div className="row">
         <div className="col-sm d-none d-sm-block">
         </div>
-        <div className="col-sm d-none d-lg-block">
-          <h4 className="date-heading">{format(displayDates[0], 'MMM D')}</h4>
-        </div>
-        <div className="col-sm d-none d-md-block">
-          <h4 className="date-heading">{format(displayDates[1], 'MMM D')}</h4>
-        </div>
-        <div className="col-sm d-none d-sm-block">
-          <h4 className="date-heading">{format(displayDates[2], 'MMM D')}</h4>
-        </div>
-        <div className="col-sm">
-          <h4 className="date-heading">{format(displayDates[3], 'MMM D')}</h4>
-        </div>
+        {displayDates.map((date, i) => (
+          <div className={`col-sm ${DATE_COLUMN_CLASSES[i]}`} key={i}>
+            <h4 className="date-heading">{format(date, 'MMM D')}</h4>
+          </div>
+        ))}
       </div>
 
       {metrics.map(metric => (

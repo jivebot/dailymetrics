@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import produce from 'immer';
 import { addDays, isBefore, startOfToday } from 'date-fns';
 import DataPointGrid from './DataPointGrid';
-import { getDataPoints, postDataPoint } from '../api';
+import { getDataPoints, postDataPoint } from 'api';
 import { blank, validNumber, dateStr, datesEndingOn } from 'utils';
 
 const initialState = {

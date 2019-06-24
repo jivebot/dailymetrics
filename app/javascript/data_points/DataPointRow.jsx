@@ -1,12 +1,6 @@
 import React from 'react';
 import DataPoint from './DataPoint';
-
-const breakpoints = [
-  "d-none d-lg-block",
-  "d-none d-md-block",
-  "d-none d-sm-block",
-  ""
-];
+import { DATE_COLUMN_CLASSES } from '../constants';
 
 export default function({ metric, displayDates, dataPoints, setDataPoint }) {
   return (
@@ -18,7 +12,7 @@ export default function({ metric, displayDates, dataPoints, setDataPoint }) {
         }
       </div>
       {dataPoints.map((dataPoint, i) => (
-        <div className={`col-sm ${breakpoints[i]}`} key={i}>
+        <div className={`col-sm ${DATE_COLUMN_CLASSES[i]}`} key={i}>
           <DataPoint metric={metric} date={displayDates[i]} dataPoint={dataPoint} setDataPoint={setDataPoint} />
         </div>
       ))}
