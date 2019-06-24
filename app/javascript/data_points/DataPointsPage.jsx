@@ -3,6 +3,7 @@ import produce from 'immer';
 import { addDays, isBefore, startOfToday } from 'date-fns';
 import DataPointGrid from './DataPointGrid';
 import { getDataPoints, postDataPoint } from 'api';
+import { NUM_DATE_COLUMNS } from '../constants';
 import { blank, validNumber, dateStr, datesEndingOn } from 'utils';
 
 const initialState = {
@@ -52,7 +53,7 @@ export default function() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { date, datesLoaded, metrics, dataPoints } = state;
 
-  const displayDates = datesEndingOn(date, 4);
+  const displayDates = datesEndingOn(date, NUM_DATE_COLUMNS);
 
   const metricsWithData = Object.values(metrics).map(metric => {
     const dateData = displayDates.map(dd => dataPoints[metric.id][dateStr(dd)]);
