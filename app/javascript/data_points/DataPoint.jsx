@@ -21,7 +21,7 @@ export default function({ metric, onDate, dataPoint, setDataPoint }) {
     setDataPoint(metric.id, onDate, value, localOnly);
   };
 
-  const valueComponent = createValueComponent(metric.metricType, { value, setValue });
+  const valueComponent = createValueComponent(metric.metricType, { metric, onDate, value, setValue });
 
   return (
     <div id={`data-point-${metric.id}-${dateStr(onDate)}`}>
