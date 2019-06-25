@@ -11,7 +11,9 @@ export default function({ metrics, displayDates, setDataPoint }) {
         </div>
         {displayDates.map((date, i) => (
           <div className={`col-sm ${DATE_COLUMN_CLASSES[i]}`} key={i}>
-            <h4 className="date-heading">{format(date, 'MMM D')}</h4>
+            <h4 className="date-heading">
+              <span class="badge badge-light">{format(date, 'ddd')}<br />{format(date, 'M-D-YY')}</span>
+            </h4>
           </div>
         ))}
       </div>

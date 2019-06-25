@@ -18,7 +18,7 @@ RSpec.describe "DataPoints page", type: :system do
       expect(page).to have_no_button('next-date-link')
 
       all(".date-heading").each.with_index do |dh, i|
-        expect(dh).to have_text(Date.current.advance(days: -3 + i).strftime('%b %e'))
+        expect(dh).to have_text(Date.current.advance(days: -3 + i).strftime('%-m-%-d-%y'))
       end
 
       within "#metric-#{metric.id}" do
@@ -56,7 +56,7 @@ RSpec.describe "DataPoints page", type: :system do
       expect(page).to have_button('next-date-link')
 
       all(".date-heading").each.with_index do |dh, i|
-        expect(dh).to have_text(Date.current.advance(days: -4 + i).strftime('%b %e'))
+        expect(dh).to have_text(Date.current.advance(days: -4 + i).strftime('%-m-%-d-%y'))
       end
 
       within "#metric-#{metric.id}" do
