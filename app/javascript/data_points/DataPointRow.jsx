@@ -1,6 +1,7 @@
 import React from 'react';
 import DataPoint from './DataPoint';
 import { DATE_COLUMN_CLASSES } from '../constants';
+import { dateStr } from 'utils';
 
 export default function({ metric, displayDates, dataPoints, setDataPoint }) {
   return (
@@ -11,11 +12,14 @@ export default function({ metric, displayDates, dataPoints, setDataPoint }) {
           <span className="badge badge-info mt-2">{metric.presenceStreakDays}-day streak!</span>
         }
       </div>
-      {dataPoints.map((dataPoint, i) => (
-        <div className={`col-sm ${DATE_COLUMN_CLASSES[i]}`} key={i}>
-          <DataPoint metric={metric} onDate={displayDates[i]} dataPoint={dataPoint} setDataPoint={setDataPoint} />
-        </div>
-      ))}
+      {dataPoints.map((dataPoint, i) => {
+        const id = `data-point-${metric.id}-${dateStr(displayDates[i])}`;
+        return (
+          <div className={`col-sm ${DATE_COLUMN_CLASSES[i]}`} id={id} key={id}>
+            <DataPoint metric={metric} onDate={displayDates[i]} dataPoint={dataPoint} setDataPoint={setDataPoint} />
+          </div>
+        );
+      })}
     </div>
   );
 }

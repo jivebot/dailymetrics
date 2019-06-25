@@ -1,7 +1,6 @@
 import React from 'react';
 import RadioList from './RadioList';
 import TextField from './TextField';
-import { dateStr } from 'utils';
 
 const valueComponents = {
   'boolean': [RadioList, { options: [["1", "Yes"], ["0", "No"]] }],
@@ -24,7 +23,7 @@ export default function({ metric, onDate, dataPoint, setDataPoint }) {
   const valueComponent = createValueComponent(metric.metricType, { metric, onDate, value, setValue });
 
   return (
-    <div id={`data-point-${metric.id}-${dateStr(onDate)}`}>
+    <div>
       <div className="d-sm-none">
         <h4>{metric.name}</h4>
         {metric.presenceStreakDays && 
