@@ -17,7 +17,7 @@ function reducer(state, action) {
   return produce(state, draft => {
     switch (action.type) {
       case 'CHANGE_DATE':
-        draft.currentDate = addDays(state.currentDate, action.delta);
+        draft.currentDate = action.date;
         break;
       case 'LOAD_DATA_POINTS':
         const { data_points: dataPoints, metrics } = action.payload;
@@ -52,6 +52,7 @@ function reducer(state, action) {
 export default function() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { currentDate, datesLoaded, metrics, dataPoints } = state;
+  const onToday = !isBefore(currentDate, startOfToday());
 
   const displayDates = datesEndingOn(currentDate, NUM_DATE_COLUMNS);
 
@@ -60,10 +61,10 @@ export default function() {
     return { ...metric, dataPoints: dateData };
   });
 
-  const changeDate = delta => {
+  const changeDate = date => {
     return e => {
       e.preventDefault();
-      dispatch({ type: 'CHANGE_DATE', delta });
+      dispatch({ type: 'CHANGE_DATE', date });
     };
   };
 
@@ -94,12 +95,11 @@ export default function() {
 
   return (
     <div>
-      <h3 className="mt-5">
-        <a href="#" onClick={changeDate(-1)} id="prev-date-link" className="date-link">&#9664;</a>
-        {isBefore(currentDate, startOfToday()) && 
-          <a href="#" onClick={changeDate(1)} id="next-date-link" className="date-link">&#9654;</a>
-        }
-      </h3>
+      <div className="mt-3 mb-3">
+        <button onClick={changeDate(addDays(currentDate, -1))} id="prev-date" className="btn btn-secondary btn-sm">&#9664;</button>
+        <button onClick={changeDate(startOfToday())} className="btn btn-secondary btn-sm ml-1" disabled={onToday}>Go to Today</button>
+        <button onClick={changeDate(addDays(currentDate, 1))} id="next-date-link" className="btn btn-secondary btn-sm ml-1" disabled={onToday}>&#9654;</button>
+      </div>
       <DataPointGrid metrics={metricsWithData} setDataPoint={setDataPoint} displayDates={displayDates} />
     </div>
   );

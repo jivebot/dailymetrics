@@ -14,8 +14,8 @@ RSpec.describe "DataPoints page", type: :system do
     
       visit '/'
 
-      expect(page).to have_link('prev-date-link')
-      expect(page).to have_no_link('next-date-link')
+      expect(page).to have_button('prev-date')
+      expect(page).to have_no_button('next-date-link')
 
       all(".date-heading").each.with_index do |dh, i|
         expect(dh).to have_text(Date.current.advance(days: -3 + i).strftime('%b %e'))
@@ -50,10 +50,10 @@ RSpec.describe "DataPoints page", type: :system do
       create(:data_point, metric: metric, on_date: Date.current - 4.days, value: 0)
 
       visit '/'
-      click_link 'prev-date-link'
+      click_button 'prev-date'
 
-      expect(page).to have_link('prev-date-link')
-      expect(page).to have_link('next-date-link')
+      expect(page).to have_button('prev-date')
+      expect(page).to have_button('next-date-link')
 
       all(".date-heading").each.with_index do |dh, i|
         expect(dh).to have_text(Date.current.advance(days: -4 + i).strftime('%b %e'))
@@ -76,19 +76,19 @@ RSpec.describe "DataPoints page", type: :system do
         choose 'Yes'
       end
 
-      click_link 'prev-date-link'
+      click_button 'prev-date'
 
       within "#data-point-#{metric.id}-#{Date.current - 4.days}" do
         choose 'No'
       end
 
-      click_link 'next-date-link'
+      click_button 'next-date-link'
 
       within "#data-point-#{metric.id}-#{Date.current}" do
         expect(find_field('Yes')).to be_checked
       end
 
-      click_link 'prev-date-link'
+      click_button 'prev-date'
 
       within "#data-point-#{metric.id}-#{Date.current - 4.days}" do
         expect(find_field('No')).to be_checked
@@ -106,11 +106,11 @@ RSpec.describe "DataPoints page", type: :system do
         fill_in with: '149.2'
       end
 
-      click_link 'prev-date-link'
+      click_button 'prev-date'
       
       find "#data-point-#{metric.id}-#{Date.current - 4.days}"
 
-      click_link 'next-date-link'
+      click_button 'next-date-link'
 
       within "#metric-#{metric.id}" do
         expect(page).to have_content(/1-day streak/i)
