@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Check, CircleSlash, X } from '@primer/octicons-react'
-import RadioList from './RadioList';
+import OptionSelect from './OptionSelect';
 import TextField from './TextField';
 
 const valueComponents = {
   boolean: [
-    RadioList,
+    OptionSelect,
     {
       options: [
         ["1", "Yes", Check, "text-success"],
