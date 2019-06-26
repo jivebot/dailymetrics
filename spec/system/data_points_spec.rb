@@ -26,21 +26,19 @@ RSpec.describe "DataPoints page", type: :system do
         expect(page).to have_content(/1-day streak/i)
 
         within "#data-point-#{metric.id}-#{Date.current}" do
-          expect(find_field('Yes')).to be_checked
+          expect(page).to have_content('Yes')
         end
 
         within "#data-point-#{metric.id}-#{Date.current - 1.day}" do
-          expect(find_field('Yes')).not_to be_checked
-          expect(find_field('No')).not_to be_checked
+          expect(page).to have_content('Edit')
         end
 
         within "#data-point-#{metric.id}-#{Date.current - 2.days}" do
-          expect(find_field('No')).to be_checked
+          expect(page).to have_content('No')
         end
 
         within "#data-point-#{metric.id}-#{Date.current - 3.days}" do
-          expect(find_field('Yes')).not_to be_checked
-          expect(find_field('No')).not_to be_checked
+          expect(page).to have_content('Edit')
         end
       end
     end
@@ -64,7 +62,7 @@ RSpec.describe "DataPoints page", type: :system do
         expect(page).to have_content(/1-day streak/i)
 
         within "#data-point-#{metric.id}-#{Date.current - 4.days}" do
-          expect(find_field('No')).to be_checked
+          expect(page).to have_content('No')
         end
       end
     end
@@ -73,25 +71,27 @@ RSpec.describe "DataPoints page", type: :system do
       visit '/'
 
       within "#data-point-#{metric.id}-#{Date.current}" do
-        choose 'Yes'
+        find('.edit-value').click
+        click_button 'Yes'
       end
 
       click_button 'prev-date'
 
       within "#data-point-#{metric.id}-#{Date.current - 4.days}" do
-        choose 'No'
+        find('.edit-value').click
+        click_button 'No'
       end
 
       click_button 'next-date-link'
 
       within "#data-point-#{metric.id}-#{Date.current}" do
-        expect(find_field('Yes')).to be_checked
+        expect(page).to have_content('Yes')
       end
 
       click_button 'prev-date'
 
       within "#data-point-#{metric.id}-#{Date.current - 4.days}" do
-        expect(find_field('No')).to be_checked
+      expect(page).to have_content('No')
       end
     end
   end

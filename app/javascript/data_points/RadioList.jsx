@@ -1,26 +1,27 @@
 import React from 'react';
-import { dateStr } from 'utils';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import Octicon from '@primer/octicons-react'
+import MissingValue from './MissingValue';
 
-export default function({ metric, onDate, value, setValue, options }) {
+export default function({ value, setValue, options, isEditing, toggleIsEditing }) {
   const strValue = value.toString();
-  const onChange = (e) => setValue(e.target.value);
+  const [selectedValue, selectedLabel, selectedIcon, selectedColor] = options.find(o => o[0] === strValue) || [];
 
   return (
-    <div>
-      <div className="form-check">
-        <label className="form-check-label option-unknown">
-          <input type="radio" name={`${metric.id}-${dateStr(onDate)}`} value="" onChange={onChange} checked={strValue === ""} className="form-check-input" />
-          Unknown
-        </label>
-      </div>
-      {options.map(([optValue, optLabel]) => (
-        <div className="form-check" key={optValue}>
-          <label className="form-check-label">
-            <input type="radio" name={`${metric.id}-${dateStr(onDate)}`} value={optValue} onChange={onChange} checked={strValue === optValue} className="form-check-input" />
-            {optLabel}
-          </label>
-        </div>
-      ))}
-    </div>
+    <Dropdown isOpen={isEditing} toggle={toggleIsEditing}>
+      <DropdownToggle color="link" className="edit-value p-0 text-decoration-none">
+        {selectedValue
+          ? <span className={selectedColor}><Octicon icon={selectedIcon}/> {selectedLabel}</span>
+          : <MissingValue />
+        }
+      </DropdownToggle>
+      <DropdownMenu>
+        {options.map(([optValue, optLabel, optIcon]) => (
+          <DropdownItem onClick={() => setValue(optValue)} active={strValue !== '' && strValue === optValue} key={optValue || 'unknown'}>
+            <Octicon icon={optIcon}/> {optLabel}
+          </DropdownItem>
+        ))}
+      </DropdownMenu>
+    </Dropdown>
   );
 }
