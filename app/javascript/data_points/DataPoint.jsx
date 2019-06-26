@@ -25,8 +25,13 @@ function createValueComponent(metricType, commonProps) {
 
 export default function({ metric, onDate, dataPoint, setDataPoint }) {
   const [isEditing, setIsEditing] = useState(false);
-  const toggleIsEditing = () => setIsEditing(!isEditing);
   const value = dataPoint ? dataPoint.value : '';
+  const [originalValue, setOriginalValue] = useState(value);
+
+  const toggleIsEditing = () => {
+    if (!isEditing) setOriginalValue(value);
+    setIsEditing(!isEditing);
+  }
 
   const setValue = (value, localOnly) => {
     setDataPoint(metric.id, onDate, value, localOnly);
@@ -34,7 +39,7 @@ export default function({ metric, onDate, dataPoint, setDataPoint }) {
 
   const valueComponent = createValueComponent(
     metric.metricType,
-    { metric, onDate, value, setValue, isEditing, toggleIsEditing }
+    { metric, onDate, value, setValue, originalValue, isEditing, toggleIsEditing }
   );
 
   return (

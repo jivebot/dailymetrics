@@ -91,7 +91,7 @@ RSpec.describe "DataPoints page", type: :system do
       click_button 'prev-date'
 
       within "#data-point-#{metric.id}-#{Date.current - 4.days}" do
-      expect(page).to have_content('No')
+        expect(page).to have_content('No')
       end
     end
   end
@@ -103,6 +103,7 @@ RSpec.describe "DataPoints page", type: :system do
       visit '/'
 
       within "#data-point-#{metric.id}-#{Date.current}" do
+        find('.edit-value').click
         fill_in with: '149.2'
       end
 
@@ -116,7 +117,7 @@ RSpec.describe "DataPoints page", type: :system do
         expect(page).to have_content(/1-day streak/i)
 
         within "#data-point-#{metric.id}-#{Date.current}" do
-          expect(find_field.value).to eq('149.2')
+          expect(page).to have_content('149.2')
         end
       end
     end
