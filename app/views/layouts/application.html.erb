@@ -41,8 +41,8 @@
           <li class="nav-item <%= 'active' if @selected_nav == 'tracking' %>">
             <a class="nav-link" href="<%= data_points_path %>">Daily Tracking</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#">Manage Metrics</a>
+          <li class="nav-item <%= 'active' if @selected_nav == 'metrics' %>">
+            <a class="nav-link" href="<%= metrics_path %>">Manage Metrics</a>
           </li>
           <li class="nav-item">
             <a class="nav-link disabled" href="#">Report</a>
@@ -54,7 +54,7 @@
       </div>
     </nav>
 
-    <main role="main" class="flex-shrink-0">
+    <main role="main" class="container flex-shrink-0">
       <%= yield %>
     </main>
 

@@ -1,0 +1,5 @@
+<%= bootstrap_form_with(model: @metric, local: true) do |f| %>
+  <%= f.text_field :name %>
+  <%= f.select :metric_type, metric_type_options %>
+  <%= f.submit "Save" %>
+<% end %>

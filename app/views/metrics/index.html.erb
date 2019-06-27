@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Metrics</h1>
+
+<p class="mt-4">
+  <%= link_to 'Add Metric', new_metric_path, class: "btn btn-secondary" %>
+</p>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Created</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @metrics.each do |metric| %>
+      <tr>
+        <td><%= metric.name %></td>
+        <td><%= metric.metric_type_name %></td>
+        <td><%= metric.created_at.to_date %></td>
+        <td class="text-right">
+          <%= link_to 'Edit', edit_metric_path(metric) %>
+          &#124;
+          <%= link_to 'Delete', metric, method: :delete, data: { confirm: 'Are you sure?' } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

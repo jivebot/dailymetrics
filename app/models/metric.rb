@@ -1,6 +1,11 @@
 class Metric < ApplicationRecord
+  METRIC_TYPE_NAMES = {
+    'boolean' => 'Yes / No',
+    'number'  => 'Number'
+  }
+
   belongs_to :user
-  has_many :data_points, dependent: :destroy
+  has_many :data_points, dependent: :delete_all
 
   enum metric_type: {
     boolean: 10,
@@ -8,6 +13,8 @@ class Metric < ApplicationRecord
   }, _prefix: 'type'
 
   validates :user, presence: true
+  validates :name, presence: true
+  validates :metric_type, presence: true
 
   def as_json(options = {})
     {
@@ -70,5 +77,9 @@ class Metric < ApplicationRecord
     else
       { streak_start: row[0].to_date, streak_days: row[1] } if row
     end
+  end
+
+  def metric_type_name
+    METRIC_TYPE_NAMES[metric_type]
   end
 end

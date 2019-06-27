@@ -8,3 +8,7 @@
 .option-unknown {
   color: #aaa;
 }
+
+label.required:after {
+  content:" *";
+}
