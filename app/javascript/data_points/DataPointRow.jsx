@@ -9,7 +9,7 @@ export default function({ metric, displayDates, dataPoints, setDataPoint }) {
       <div className="col-sm d-none d-sm-block">
         <h4>{metric.name}</h4>
         {metric.presenceStreakDays && 
-          <span className="badge badge-info mt-2">{metric.presenceStreakDays}-day streak!</span>
+          <span className="badge badge-info">{metric.presenceStreakDays}-day streak!</span>
         }
       </div>
       {dataPoints.map((dataPoint, i) => {
